@@ -34,17 +34,20 @@ class Bacteria:UIImageView  {
     }
     
     func checkDistance() {
-        let petrieDish = self.superview as! PetrieDish
-        let center = CGPoint(x: (petrieDish.frame.width)/2, y: (petrieDish.frame.height)/2)
+        
+        let center = CGPoint(x: (571)/2, y: (571)/2)
         let position = (self.center)
         let deltaX = Float(abs(center.x-position.x))
         let deltaY = Float(abs(center.y-position.y))
         let distance = sqrt(powf(deltaX,2)+powf(deltaY,2))
-        let radius = Float(petrieDish.frame.height)/2
+        let radius = Float(571)/2
         
         if distance >= radius - 15 {
-            self.direction.x = -self.direction.x
-            self.direction.y = -self.direction.y
+            
+            self.direction.x = -(self.direction.x)
+            self.direction.y = -(self.direction.y)
+            self.center.x += self.direction.x * 4
+            self.center.y += self.direction.y * 4
             
         } else if drand48() <= 0.002{ //randomly change direction sometimes
             self.direction.x = CGFloat(drand48())

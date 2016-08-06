@@ -168,7 +168,6 @@ class Producer: DNAFragment {
     }
     
     func activate(petrieDish:PetrieDish) {
-        print("active")
         let substance = UIImageView()
         switch self.substance! {
         case "insulin":

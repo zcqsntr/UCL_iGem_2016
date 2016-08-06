@@ -64,17 +64,19 @@ class gameViewController: UIViewController, UICollisionBehaviorDelegate, Bacteri
         let previousVC = sender.sourceViewController as! editPlasmidViewController
         self.bioBrick = previousVC.bioBrick
         let activateTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: Selector("getActiveGenes"), userInfo: nil, repeats: true)
+        let bacteriocinTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: Selector("poisonBadBacteria"), userInfo: nil, repeats: true)
     }
     
     
     override func viewDidLoad() {
-        collision = UICollisionBehavior(items: petrieDish.badBacterias)
+        /*collision = UICollisionBehavior(items: petrieDish.badBacterias)
         animator = UIDynamicAnimator(referenceView: self.view)
         collision.translatesReferenceBoundsIntoBoundary = true
         collision.collisionMode = UICollisionBehaviorMode.Boundaries
         animator.addBehavior(collision)
         
         collision.collisionDelegate = self
+        */
         petrieDish.PH = 4
         petrieDish.temperature = 4
         petrieDish.lightIsOn = false
@@ -90,8 +92,10 @@ class gameViewController: UIViewController, UICollisionBehaviorDelegate, Bacteri
         goodBacteria.delegate = self
         badBacteria.delegate = self
         
-        let activateTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: Selector("getActiveGenes"), userInfo: nil, repeats: true)
         let moveAndReplicateTimer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: Selector("moveAndReplicate"), userInfo: nil, repeats: true)
+        
+        
+        
         
     }
     
@@ -216,18 +220,35 @@ class gameViewController: UIViewController, UICollisionBehaviorDelegate, Bacteri
         
     }
     
+    //check for intersection of bad bacteria and bacteriocin
+    func poisonBadBacteria() {
+        print("\(petrieDish.badBacterias.count) bad bacteria \(petrieDish.goodBacterias.count) goodbacteria")
+        for bacteria in petrieDish.badBacterias {
+            for bacteriocin in petrieDish.bacteriocins { //Running the loop through the subviews array
+                if(CGRectIntersectsRect(bacteria.frame, bacteriocin.frame)){ //Checking the view is intersecting with other or not
+                    //If intersected then return true
+                    bacteriocin.removeFromSuperview()
+                    bacteria.removeFromSuperview()
+                    petrieDish.bacteriocins.removeObject(bacteriocin)
+                    petrieDish.badBacterias.removeObject(bacteria)
+                }
+            }
+        }
+    }
+    
+    
     //move and replicate bacteria on petridish
     func moveAndReplicate() {
         petrieDish.move()
         petrieDish.replicate()
-        for bacteria in petrieDish.badBacterias {
+        /*for bacteria in petrieDish.badBacterias {
             collision.addItem(bacteria)
         }
         for bacteriocin in petrieDish.bacteriocins {
             collision.addItem(bacteriocin)
         }
         collision.translatesReferenceBoundsIntoBoundary = true
-        animator.addBehavior(collision)
+        animator.addBehavior(collision)*/
       
     }
 }

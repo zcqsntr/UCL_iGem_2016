@@ -16,7 +16,7 @@ class PetrieDish: UIImageView {
     var PH:Int?
     var temperature:Int?
     var lightIsOn:Bool?
-    let replicationProb = 1.0
+    let replicationProb = 0.1
     var bacteriocins:[UIImageView] = []
     
     func addBacteria(newBacteria:Bacteria) {

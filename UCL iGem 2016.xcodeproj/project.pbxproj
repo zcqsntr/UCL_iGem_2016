@@ -23,6 +23,7 @@
 		5F1C60F11D4CC49100FB7467 /* alkaliSensitivePromoterLeftRSs.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F1C60ED1D4CC49100FB7467 /* alkaliSensitivePromoterLeftRSs.png */; };
 		5F1C60F21D4CC49100FB7467 /* hotSensitivePromoterLeftRSs.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F1C60EE1D4CC49100FB7467 /* hotSensitivePromoterLeftRSs.png */; };
 		5F1C60F31D4CC49100FB7467 /* coldSensitivePromoterLeftRSs.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F1C60EF1D4CC49100FB7467 /* coldSensitivePromoterLeftRSs.png */; };
+		5F1E1E521D568FBD00AB8877 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1E1E511D568FBD00AB8877 /* Extensions.swift */; };
 		5F3845CE1D4D277900B36CC5 /* acidSensitiveRightRSs.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F3845C21D4D277900B36CC5 /* acidSensitiveRightRSs.png */; };
 		5F3845CF1D4D277900B36CC5 /* alkaliSensitivePromoterRightRSs.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F3845C31D4D277900B36CC5 /* alkaliSensitivePromoterRightRSs.png */; };
 		5F3845D01D4D277900B36CC5 /* hotSensitivePromoterRightRSs.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F3845C41D4D277900B36CC5 /* hotSensitivePromoterRightRSs.png */; };
@@ -126,6 +127,7 @@
 		5F1C60ED1D4CC49100FB7467 /* alkaliSensitivePromoterLeftRSs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alkaliSensitivePromoterLeftRSs.png; sourceTree = "<group>"; };
 		5F1C60EE1D4CC49100FB7467 /* hotSensitivePromoterLeftRSs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hotSensitivePromoterLeftRSs.png; sourceTree = "<group>"; };
 		5F1C60EF1D4CC49100FB7467 /* coldSensitivePromoterLeftRSs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coldSensitivePromoterLeftRSs.png; sourceTree = "<group>"; };
+		5F1E1E511D568FBD00AB8877 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		5F3845C21D4D277900B36CC5 /* acidSensitiveRightRSs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = acidSensitiveRightRSs.png; sourceTree = "<group>"; };
 		5F3845C31D4D277900B36CC5 /* alkaliSensitivePromoterRightRSs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alkaliSensitivePromoterRightRSs.png; sourceTree = "<group>"; };
 		5F3845C41D4D277900B36CC5 /* hotSensitivePromoterRightRSs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hotSensitivePromoterRightRSs.png; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 				5FED63011D27149F009286B4 /* ProjectDetailViewController.swift */,
 				5FED62F51D26CA7F009286B4 /* homeViewController.swift */,
 				5FED62FF1D270F73009286B4 /* projectViewController.swift */,
+				5F1E1E511D568FBD00AB8877 /* Extensions.swift */,
 			);
 			name = "Non game";
 			sourceTree = "<group>";
@@ -626,6 +629,7 @@
 				5FED62FE1D26FB6A009286B4 /* bioBrickView.swift in Sources */,
 				5F7794CB1D2AECA7002D3808 /* Bacteria.swift in Sources */,
 				5FED63021D27149F009286B4 /* ProjectDetailViewController.swift in Sources */,
+				5F1E1E521D568FBD00AB8877 /* Extensions.swift in Sources */,
 				5FED62CF1D26B31E009286B4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
