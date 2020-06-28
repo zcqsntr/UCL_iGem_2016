@@ -19,5 +19,4 @@ class ProjectDetailViewController: UIViewController {
         let textArray = [text1, text2, text3]
         text.text = textArray[whichRow!]
     }
-    
 }

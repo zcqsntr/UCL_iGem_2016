@@ -13,51 +13,55 @@ class projectViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var text: UITextView!
     
     override func viewDidLoad() {
-        tableView.scrollEnabled = false
-        text.userInteractionEnabled = false
+        tableView.isScrollEnabled = false
+        text.isUserInteractionEnabled = false
         tableView.reloadData()
+        tableView.isScrollEnabled = false
+        
     }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }
-
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let destinationViewController = segue.destinationViewController as! ProjectDetailViewController
-        destinationViewController.whichRow = sender?.row
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationViewController = segue.destination as! ProjectDetailViewController
+        destinationViewController.whichRow = (sender as! IndexPath).row
         
     }
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-        
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Areas of our Project"
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        performSegue(withIdentifier: "projectDetail", sender: indexPath)
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        performSegueWithIdentifier("projectDetail", sender: indexPath)
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell =  UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "Cell")
-        switch indexPath.row {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell =  tableView.dequeueReusableCell(withIdentifier: "Cell") as! iGemTableViewCell
+        switch (indexPath as NSIndexPath).row {
         case 0:
-            cell.textLabel?.text = "Oxidative stress - the root of the problem"
+            cell.titleLabel.text = "Oxidative stress"
+            cell.detailLabel.text = "The root of the problem"
         case 1:
-            cell.textLabel?.text = "False teeth - a thing of the past"
+            cell.titleLabel.text = "False teeth"
+            cell.detailLabel.text = "A thing of the past"
         case 2:
-            cell.textLabel?.text = "Grey love- it does not have to be dangerous"
+            cell.titleLabel.text = "Grey love"
+            cell.detailLabel.text = "It does not have to be dangerous"
         default:
             break
         }
-        cell.textLabel?.numberOfLines = 0
-        cell.textLabel?.font = UIFont.systemFontOfSize(14.0)
+        //cell.detailLabel.textColor = UIColor.orangeColor()
+        cell.titleLabel.textColor = UIColor.white
+        cell.backgroundView = UIImageView(image: UIImage(named: "blueBackground.png"))
         return cell
-        
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 111.5
+    }
+    
+//    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        return "Areas of Our Project"
+//    }
 }

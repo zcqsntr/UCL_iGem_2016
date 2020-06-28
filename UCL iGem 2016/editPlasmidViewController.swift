@@ -11,14 +11,10 @@ import UIKit
 class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
     
     //MARK: Setup
-    
     var bioBrick:[DNAFragment]?
-    
     @IBOutlet var editPlasmidView: UIView!
     @IBOutlet weak var panel: UIImageView!
     @IBOutlet weak var plasmid: UIImageView!
-    //var promoterPairs:[[(DNAFragment,DNAFragment)]]?
-    
     var panelShowing: String?
     var isFirstLoad = true
     @IBOutlet weak var enzymeViewContainer: UIView!
@@ -26,25 +22,6 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
     @IBOutlet weak var Xba1Button: UIButton!
     @IBOutlet weak var Spe1Button: UIButton!
     @IBOutlet weak var Pst1Button: UIButton!
-    
-    @IBAction func performLigation() {
-        ligate()
-        justBeenCut = false
-    }
-    
-    
-    @IBAction func performDigest() {
-        if !justBeenCut {
-            restrict()
-        }
-        justBeenCut = true
-    }
- 
-    var enzymeButtons:[UIButton]?
-    
-    @IBAction func enzymeButtonPress(sender: UIButton) {
-        sender.selected = !sender.selected
-    }
     
     var genes:[[DoubleFragmentContainer]]?
     var reporters: [[DoubleFragmentContainer]]?
@@ -58,36 +35,44 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
     var genePairContainers:[[DoubleFragmentContainer]]?
     var reporterPairContainers:[[DoubleFragmentContainer]]?
     
-    func createContainers(pairs:[[(DNAFragment, DNAFragment)]]) -> [[DoubleFragmentContainer]] {
+    @IBAction func performLigation() {
+        ligate()
+        justBeenCut = false
+    }
+    @IBAction func performDigest() {
+        if !justBeenCut {
+            restrict()
+        }
+        justBeenCut = true
+    }
+    var enzymeButtons:[UIButton]?
+    
+    @IBAction func enzymeButtonPress(_ sender: UIButton) {
+        sender.isSelected = !sender.isSelected
+    }
+    func createContainers(_ pairs:[[(DNAFragment, DNAFragment)]]) -> [[DoubleFragmentContainer]] {
         var pairContainers:[[DoubleFragmentContainer]] = [[]]
         for array in pairs {
             var containerArray:[DoubleFragmentContainer] = []
             for tuple in array {
                 let leftFragment = tuple.0
                 let rightFragment = tuple.1
-                let container = DoubleFragmentContainer(frame: CGRectMake(0, 0, fragWidth + smallWidth - overhang*2, fragHeight), leftFragment: leftFragment, rightFragment: rightFragment, overhang: overhang)
+                let container = DoubleFragmentContainer(frame: CGRect(x: 0, y: 0, width: fragWidth + smallWidth - overhang*2, height: fragHeight), leftFragment: leftFragment, rightFragment: rightFragment, overhang: overhang)
                 containerArray.append(container)
             }
             pairContainers.append(containerArray)
         }
         return pairContainers
     }
-  
     override func viewDidLoad() {
         
-        
-        bioBrick = [/*DNAFragment(image: UIImage(named: "blankFragment.png")!),
-                    DNAFragment(image: UIImage(named: "blankFragment.png")!),
-                    DNAFragment(image: UIImage(named: "blankFragment.png")!),
-                    DNAFragment(image: UIImage(named: "blankFragment.png")!),
-                    DNAFragment(image: UIImage(named: "blankFragment.png")!),*/
+        bioBrick = [
             RestrictionSites(name:"LeftRS",image: UIImage(named: "LeftRS.png")!, smallWidth: smallWidth, largeWidth: smallWidth + fragWidth - overhang*2, height: fragHeight, side:"left"),
             SmallFragment(name:"blankHalfFragment",image: UIImage(named: "blankHalfFragment.png")!, width: smallWidth, height: fragHeight),
             RestrictionSites(name:"RightRS",image: UIImage(named: "RightRS.png")!, smallWidth: smallWidth, largeWidth: smallWidth + fragWidth - overhang*2, height: fragHeight, side:"right")
         ]
         
-        //set up pairs to be put into containers
-        promoterPairs = [[
+        promoterPairs = [[ //set up pairs to be put into containers
                 (RestrictionSites(name:"coldSensitivePromoterLeftRSs", image: UIImage(named:"coldSensitivePromoterLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
                     Promoter(name:"coldSensitivePromoter",image: UIImage(named:"coldSensitivePromoter.png")!, width: fragWidth, height: fragHeight, activator: "Temperature", threshold:1)),
                 (Promoter(name:"coldSensitivePromoter",image: UIImage(named:"coldSensitivePromoter.png")!, width: fragWidth, height: fragHeight, activator: "Temperature", threshold:1),
@@ -104,14 +89,17 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
                 (RestrictionSites(name:"alkaliSensitivePromoterLeftRSs",image: UIImage(named:"alkaliSensitivePromoterLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
                     Promoter(name:"alkaliSensitivePromoter",image: UIImage(named:"alkaliSensitivePromoter.png")!, width: fragWidth, height: fragHeight, activator: "PH", threshold: 9)),
                 (Promoter(name:"alkaliSensitivePromoter",image: UIImage(named:"alkaliSensitivePromoter.png")!, width: fragWidth, height: fragHeight, activator: "PH", threshold:9),
-                    RestrictionSites(name:"alkaliSensitivePromoterRightRSs", image: UIImage(named:"alkaliSensitivePromoterRightRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"right")),
-            ],[
+                    RestrictionSites(name:"alkaliSensitivePromoterRightRSs", image: UIImage(named:"alkaliSensitivePromoterRightRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"right"))
+                ],[
                 (RestrictionSites(name: "greenSensitivePromoterLeftRSs", image: UIImage(named:"greenLightSensitivePromoterLeftRSs")!, smallWidth: smallWidth, largeWidth: fragWidth+smallWidth - overhang*2, height: fragHeight, side: "left"),
                 Promoter(name: "greenSensitivePromoter'", image: UIImage(named:"greenLightSensitivePromoter")!, width: fragWidth, height: fragHeight, activator: "GreenLight", threshold: 0)),
                 (Promoter(name: "greenSensitivePromoter'", image: UIImage(named:"greenLightSensitivePromoter")!, width: fragWidth, height: fragHeight, activator: "GreenLight", threshold: 0),
-                    RestrictionSites(name: "greenSensitivePromoterRightRSs", image: UIImage(named:"greenLightSensitivePromoterRightRSs")!, smallWidth: smallWidth, largeWidth: fragWidth+smallWidth - overhang*2, height: fragHeight, side: "right"))
+                    RestrictionSites(name: "greenSensitivePromoterRightRSs", image: UIImage(named:"greenLightSensitivePromoterRightRSs")!, smallWidth: smallWidth, largeWidth: fragWidth+smallWidth - overhang*2, height: fragHeight, side: "right")),
+                (RestrictionSites(name:"highSugarPromoterLeftRSs", image: UIImage(named:"highSugarPromoterLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
+                    Promoter(name:"highSugarPromoter",image: UIImage(named:"highSugarPromoter.png")!, width: fragWidth, height: fragHeight, activator: "Sugar", threshold:9)),
+                (Promoter(name:"highSugarPromoter",image: UIImage(named:"highSugarPromoter.png")!, width: fragWidth, height: fragHeight, activator: "Sugar", threshold:9),
+                    RestrictionSites(name:"highSugarPromoterRightRSs", image: UIImage(named:"highSugarPromoterRightRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"right"))
             ]]
-       
         reporterPairs = [[
             (RestrictionSites(name:"GFPLeftRSs", image: UIImage(named:"GFPLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
                 Reporter(name: "GFP",image: UIImage(named:"GFP.png")!, width: fragWidth, height: fragHeight, colour: "Green")),
@@ -127,43 +115,48 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
             (Reporter(name: "BFP",image: UIImage(named:"BFP.png")!, width: fragWidth, height: fragHeight, colour: "Blue"),
                 RestrictionSites(name:"BFPRightRSs", image: UIImage(named:"BFPRightRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"right")),
             ]]
-        
         genePairs = [[
             (RestrictionSites(name:"repressorLeftRSs", image: UIImage(named:"repressorLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
                 Repressor(name: "Repressor", image:UIImage(named: "repressor")!, width: fragWidth, height: fragHeight)),
             (Repressor(name: "Repressor", image:UIImage(named: "repressor")!, width: fragWidth, height: fragHeight),
                 RestrictionSites(name:"repressorPromoterRightRSs", image: UIImage(named:"repressorRightRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"right")),
             ],[
-            (RestrictionSites(name:"repressorLeftRSs", image: UIImage(named:"repressorLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
-                Producer(name: "bacteriocin", image: UIImage(named:"GFP")!, width: fragWidth, height: fragHeight, substance: "bacteriocin"))
-            
+            (RestrictionSites(name:"bacteriocinLeftRSs", image: UIImage(named:"bacteriocinLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
+                Producer(name: "bacteriocin", image: UIImage(named:"bacteriocinFrag")!, width: fragWidth, height: fragHeight, substance: "bacteriocin")),
+            (Producer(name: "bacteriocin", image: UIImage(named:"bacteriocinFrag")!, width: fragWidth, height: fragHeight, substance: "bacteriocin"),
+                RestrictionSites(name:"bacteriocinRightRSs", image: UIImage(named:"bacteriocinRightRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"right")),
+            (RestrictionSites(name:"insulinLeftRSs", image: UIImage(named:"insulinLeftRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"left"),
+                Producer(name: "insulin", image: UIImage(named:"insulinFrag")!, width: fragWidth, height: fragHeight, substance: "insulin")),
+            (Producer(name: "insulin", image: UIImage(named:"insulinFrag")!, width: fragWidth, height: fragHeight, substance: "insulin"),
+                RestrictionSites(name:"insulinRightRSs", image: UIImage(named:"insulinRightRSs.png")!, smallWidth: smallWidth,largeWidth: smallWidth+fragWidth - overhang*2, height: fragHeight, side:"right"))
             ]]
-        
         reporterPairContainers = createContainers(reporterPairs!)
         promoterPairContainers = createContainers(promoterPairs!)
         genePairContainers = createContainers(genePairs!)
-        
         panelShowing = "promoters"
         displayPanelFragments(promoterPairContainers!)
         isFirstLoad = false
-
         displayPlasmid(bioBrick!)
         
-        //set up buttons
-        enzymeButtons = [EcoR1Button, Xba1Button, Spe1Button, Pst1Button]
-        EcoR1Button.setImage(UIImage(named:"EcoR1Selected"), forState: UIControlState.Selected)
-        Xba1Button.setImage(UIImage(named:"XbalSelected"), forState: UIControlState.Selected)
-        Spe1Button.setImage(UIImage(named:"SpeSelected"), forState: UIControlState.Selected)
-        Pst1Button.setImage(UIImage(named:"PstSelected"), forState: UIControlState.Selected)
+        enzymeButtons = [EcoR1Button, Xba1Button, Spe1Button, Pst1Button] //set up buttons
+        EcoR1Button.setImage(UIImage(named:"EcoR1Selected"), for: UIControlState.selected)
+        Xba1Button.setImage(UIImage(named:"XbalSelected"), for: UIControlState.selected)
+        Spe1Button.setImage(UIImage(named:"SpeSelected"), for: UIControlState.selected)
+        Pst1Button.setImage(UIImage(named:"PstSelected"), for: UIControlState.selected)
+        
+        //popups
+        let plasmidPopup = Popup(frame: CGRect(x: plasmid.center.x-250, y: plasmid.center.y - 75, width: 500, height: 150) , text: "This is the plasmid .......")
+        let DNAPopup = Popup(frame: CGRect(x: panel.center.x - 250, y: panel.center.y - 125, width: 500, height: 250), text: "This is the panel....")
+        self.view.addSubview(plasmidPopup)
+        self.view.addSubview(DNAPopup)
+        
     }
     
     //MARK: Biobrick management
-    //unwinds to petriedish view
     @IBAction func save() {
-        
+        //unwinds to petriedish view
     }
-    
-    func fragmentDropped(doubleFragment:DoubleFragmentContainer) {
+    func fragmentDropped(_ doubleFragment:DoubleFragmentContainer) {
         //align dropped fragment with empty space
         if let empty = getEmptySpace() {
             let xDist = abs(empty.center.x - doubleFragment.center.x)
@@ -173,9 +166,7 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
                 newFragment = doubleFragment
             }
         }
-        
     }
-    
     func getEmptySpace() -> RestrictionSites? {
         for fragment in bioBrick! {
             if let RS = fragment as? RestrictionSites {
@@ -197,23 +188,20 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
         case "reporters":
             clearFragments(reporterPairContainers!)
         case "enzymes":
-            enzymeViewContainer.hidden = true
+            enzymeViewContainer.isHidden = true
         default : break
-        
         }
-        
     }
-    
-    func displayPanelFragments(doubleFragments:[[DoubleFragmentContainer]]) {
+    func displayPanelFragments(_ doubleFragments:[[DoubleFragmentContainer]]) {
         var x = -1 //x being weird, dont know why, start at -1 fixes
         for array in doubleFragments {
             var y = 0
             for fragmentContainer in array {
                 fragmentContainer.delegate = self
-                fragmentContainer.userInteractionEnabled = true
+                fragmentContainer.isUserInteractionEnabled = true
                 if !fragmentContainer.hasBeenTouched {
                     fragmentContainer.center = CGPoint(x: x*180 + 90, y: y*50+30)
-                    let pointInSuperView = panel.convertPoint(fragmentContainer.center, toView: editPlasmidView)
+                    let pointInSuperView = panel.convert(fragmentContainer.center, to: editPlasmidView)
                     fragmentContainer.center = pointInSuperView
                 }
                 editPlasmidView.addSubview(fragmentContainer)
@@ -221,10 +209,8 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
             }
         x += 1
         }
-        
     }
-    
-    @IBAction func panelChanger(sender: UIButton) {
+    @IBAction func panelChanger(_ sender: UIButton) {
         if !isFirstLoad {
             clearPanel()
         }
@@ -243,13 +229,12 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
                 panelShowing = "reporters"
             case 3:
                 panel.image = UIImage(named:"enzymesBubble.png") //show REs
-                enzymeViewContainer.hidden = false
+                enzymeViewContainer.isHidden = false
                 panelShowing = "enzymes"
             default: break
         }
     }
-    
-    func clearFragments(fragments: [[DoubleFragmentContainer]]) {
+    func clearFragments(_ fragments: [[DoubleFragmentContainer]]) {
         for array in fragments {
             for fragment in array {
                 if !fragment.hasBeenTouched { //need to get a better way to do this
@@ -263,92 +248,74 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
     let smallWidth = CGFloat(50)
     let fragWidth = CGFloat(90)
     let fragHeight = CGFloat(20)
-    let overhang = CGFloat(16)
+    let overhang = CGFloat(17.5)
     var numFragsOnRight = 0
     var numFragsOnLeft = 0
     var leftBuffer:UIImageView?
     var rightBuffer:UIImageView?
-    
-    func displayPlasmid(bioBrick :[DNAFragment]) {
-        /// have the backgrund plasmid
-        // on top of plasmid go trough biobrick and display fragments colorcoded depending on the RS and the type (promoter, reporter, gene etc)
-        
-        //display buffer
-        //RSs start off in middle with three fragments either side 
-        //need to display left and right buffer
-        //left buffer size = plasmid gap/ 2 - size(RSs)/2 - noOfFragmentsOnLeft *size(fragment)
-        //right buffer size = plasmid gap/ 2 - size(RSs)/2 - noOfFragmentsOnRight *size(fragment)
-        //display rectangle buffers and the relevant RS
+    var leftBufferSquare:UIImageView?
+    var rightBufferSquare:UIImageView?
+   
+    func displayPlasmid(_ bioBrick :[DNAFragment]) {
         if !isFirstLoad {
             leftBuffer?.removeFromSuperview()
             rightBuffer?.removeFromSuperview()
+            leftBufferSquare?.removeFromSuperview()
+            rightBufferSquare?.removeFromSuperview()
         }
+        let centreOfPlasmid = CGPoint(x: 392.25, y: 270)
+        let leftPlasmidStartOnScreen = CGPoint(x: 97, y: 256)
         
-        //from outer boudaries
-        let gapWidth = 586
-        let leftPlasmidStartOnScreen = CGPoint(x: 95, y: 256)
-        let rightPlasmidStartOnScreen = CGPoint(x: 680, y: 256)
-        //these converted points not working
-        //let leftPlasmidStartOnPlasmid = plasmid.convertPoint(leftPlasmidStartOnScreen, toView: plasmid)
-        //let rightPlasmidStartOnPlasmid = plasmid.convertPoint(rightPlasmidStartOnScreen, toView: plasmid)
-        
-        //set up buffers 
-        rightBuffer = UIImageView(image: UIImage(named:"plasmidBuffer.png"))
-        leftBuffer = UIImageView(image: UIImage(named:"plasmidBuffer.png"))
-        
-        let numOfOverhangsOnLeft = CGFloat(numFragsOnLeft + 2)
-        let numOfOverhangsOnRight = CGFloat(numFragsOnRight + 2)
-        
-        
-        let totalRight = fragWidth*CGFloat(numFragsOnRight)-overhang*numOfOverhangsOnRight
+        let numOfOverhangsOnLeft = CGFloat(numFragsOnLeft + 1)
         let totalLeft = fragWidth*CGFloat(numFragsOnLeft)-overhang*numOfOverhangsOnLeft
-        
-        //                                      - the middle junk -the RSs -no of fragments on that side + buffer needed die to overhangs
-        let rightBufferWidth = CGFloat(gapWidth)/2 - smallWidth * 1.5 - totalRight - overhang * 2 + 1
-        let leftBufferWidth = CGFloat(gapWidth)/2 - smallWidth * 1.5 - totalLeft + overhang
-        
-        
-        //change buffer
-        leftBuffer!.frame = CGRectMake(leftPlasmidStartOnScreen.x, leftPlasmidStartOnScreen.y, leftBufferWidth, fragHeight)
-        //for some reason right buffer needs +2, shoudnt be a problem
-        rightBuffer!.frame = CGRectMake(CGFloat(rightPlasmidStartOnScreen.x-rightBufferWidth+2), rightPlasmidStartOnScreen.y, rightBufferWidth, fragHeight)
-        
-        
-        editPlasmidView.addSubview(leftBuffer!)
-        editPlasmidView.addSubview(rightBuffer!)
-        
-        //number of fragments + 1
-        
     
-        // display fragments
-        var startPoint = CGPointMake(CGRectGetMaxX(leftBuffer!.frame), CGRectGetMinY(leftBuffer!.frame))
-        var i = 0
+        var startPoint = CGPoint(x: centreOfPlasmid.x-totalLeft-smallWidth*1.5-3, y: leftPlasmidStartOnScreen.y)
+        //make left buffer
+        leftBuffer = UIImageView(image: UIImage(named:"plasmidBuffer.png"))
+        let leftBufferWidth = startPoint.x - leftPlasmidStartOnScreen.x
+        leftBuffer!.frame = CGRect(x: leftPlasmidStartOnScreen.x, y: leftPlasmidStartOnScreen.y, width: leftBufferWidth, height: fragHeight)
+        editPlasmidView.addSubview(leftBuffer!)
+        leftBufferSquare = UIImageView(image: UIImage(named: "plasmidBuffer.png"))
+        leftBufferSquare!.frame = CGRect(x: leftBuffer!.frame.maxX, y: leftBuffer!.frame.minY, width: overhang-2, height: fragHeight/2)
+        editPlasmidView.addSubview(leftBufferSquare!)
+        
         for fragment in bioBrick {
-            /*fragment.image = nil
-            fragment.backgroundColor = UIColor.clearColor()
-            fragment.opaque = false */
-            i += 1
             fragment.frame.origin = startPoint
-            //let pointInSuperView = plasmid.convertPoint(fragment.center, toView: editPlasmidView)
-            //fragment.center = pointInSuperView
+            
             if fragment is SmallFragment {
+                //increment startPoint depending on how big each fragment is
                 if fragment is RestrictionSites && (fragment as! RestrictionSites).isCut {
-                    startPoint.x += smallWidth + fragWidth - (overhang * 3 - 1) //-1 to ensure RS is shown
+                    startPoint.x += smallWidth + fragWidth - (overhang*3) + 2 //-1 to ensure RS is shown
                 } else {
-                    startPoint.x += smallWidth - overhang
+                    startPoint.x += smallWidth - (overhang+2)
                 }
             } else {
-                startPoint.x += fragWidth - overhang
+                startPoint.x += fragWidth - (overhang+2)
             }
             editPlasmidView.addSubview(fragment)
         }
+        
+        startPoint.x += overhang-2
+        
+        //add right buffer
+        rightBuffer = UIImageView(image: UIImage(named:"plasmidBuffer.png"))
+        
+        let rightPlasmidStartOnScreen = CGPoint(x: 683.5, y: 256)
+        let numOfOverhangsOnRight = CGFloat(numFragsOnRight + 1)
+        let totalRight = fragWidth*CGFloat(numFragsOnRight)-overhang*numOfOverhangsOnRight
+        let rightBufferWidth = rightPlasmidStartOnScreen.x - startPoint.x
+        rightBuffer!.frame = CGRect(x: CGFloat(startPoint.x), y: rightPlasmidStartOnScreen.y, width: rightBufferWidth, height: fragHeight)
+        editPlasmidView.addSubview(rightBuffer!)
+        rightBufferSquare = UIImageView(image: UIImage(named: "plasmidBuffer.png"))
+        rightBufferSquare!.frame = CGRect(x: rightBuffer!.frame.minX - overhang + 2, y: rightBuffer!.frame.minY + fragHeight/2, width: overhang-2, height: fragHeight/2)
+        editPlasmidView.addSubview(rightBufferSquare!)
+        
         bringRSsToFront()
     }
-    
     func bringRSsToFront() {
         for fragment in bioBrick! {
             if fragment is RestrictionSites {
-                self.editPlasmidView.bringSubviewToFront(fragment)
+                self.editPlasmidView.bringSubview(toFront: fragment)
             }
         }
     }
@@ -360,9 +327,9 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
     func restrict() {
         var activeButtons:[UIButton] = []
         for button in enzymeButtons! {
-            if button.selected == true {
+            if button.isSelected == true {
                 activeButtons.append(button)
-                button.selected = false
+                button.isSelected = false
             }
         }
         if activeButtons.contains(EcoR1Button) && activeButtons.contains(Xba1Button) {
@@ -382,9 +349,7 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
         //return bioBrick with the cut RS set to an invisible skin with the width of a small plus large fragment
         displayPlasmid(bioBrick!)
     }
-        
-    
-    func makeCut(side:String) {
+    func makeCut(_ side:String) {
         for fragment in bioBrick! {
             if fragment is RestrictionSites {
                 let RSs = fragment as! RestrictionSites
@@ -396,7 +361,6 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
         }
     }
     
-    
     //MARK: Ligation
     var newFragment:DoubleFragmentContainer?
     func ligate() {
@@ -404,40 +368,44 @@ class editPlasmidViewController: UIViewController, DNAFragmentDelegate {
         if isValidLigation() {
             bioBrick?.append((newFragment?.leftFragment)!)
             bioBrick?.append((newFragment?.rightFragment)!)
-            newFragment?.userInteractionEnabled = false
+            newFragment?.isUserInteractionEnabled = false
             removeOldRSs()
-            bioBrick!.sortInPlace({$0.convertPoint($0.center, toView: editPlasmidView).x < $1.convertPoint($0.center, toView: editPlasmidView).x})
+            bioBrick!.sort(by: {$0.convert($0.center, to: editPlasmidView).x < $1.convert($0.center, to: editPlasmidView).x})
+        } else {
+            let badLigationPopup = Popup(frame: CGRect(x: self.view.frame.width/2 - 250/2, y: 100, width: 250, height: 100), text: "This is not a valid ligation")
+            self.view.addSubview(badLigationPopup)
         }
         newFragment = nil
     }
-    
     func removeOldRSs() {
         for fragment in bioBrick! {
             if let RS = fragment as? RestrictionSites {
                 if RS.isCut {
-                    bioBrick?.removeAtIndex((bioBrick?.indexOf(fragment))!)
+                    bioBrick?.remove(at: (bioBrick?.index(of: fragment))!)
                     RS.removeFromSuperview()
                 }
             }
         }
     }
-    
     func isValidLigation() -> Bool {
-        switch sideCurrentlyEditing! {
-        case "left":
-            if newFragment?.leftFragment is RestrictionSites {
-                newFragment?.otherRSRight.removeFromSuperview()
-                return true
+        if let side = sideCurrentlyEditing {
+            switch side {
+            case "left":
+                if newFragment?.leftFragment is RestrictionSites {
+                    newFragment?.otherRSRight.removeFromSuperview()
+                    return true
+                }
+            case "right":
+                if newFragment?.rightFragment is RestrictionSites {
+                    newFragment?.otherRSLeft.removeFromSuperview()
+                    return true
+                }
+            default: return false
             }
-        case "right":
-            if newFragment?.rightFragment is RestrictionSites {
-                newFragment?.otherRSLeft.removeFromSuperview()
-                return true
-            }
-        default: break
+            newFragment!.center.y -= 10
+            return false
         }
         return false
+        
     }
-    
-
 }

@@ -10,7 +10,7 @@ import UIKit
 
 //MARK: Protocols
 protocol DNAFragmentDelegate {
-    func fragmentDropped(doubleFragment:DoubleFragmentContainer)
+    func fragmentDropped(_ doubleFragment:DoubleFragmentContainer)
 }
 
 //MARK: Double Fragment Container
@@ -21,29 +21,27 @@ class DoubleFragmentContainer: UIView {
     let otherRSRight = UIImageView(image: UIImage(named: "otherRSRight"))
     
     init(frame: CGRect, leftFragment:DNAFragment, rightFragment:DNAFragment, overhang:CGFloat) {
-        leftFragment.frame.origin = CGPointMake(0, 0)
-        rightFragment.frame.origin = CGPointMake(leftFragment.frame.size.width - overhang*2, 0)
+        leftFragment.frame.origin = CGPoint(x: 0, y: 0)
+        rightFragment.frame.origin = CGPoint(x: leftFragment.frame.size.width - overhang*2, y: 0)
         self.leftFragment = leftFragment
         self.rightFragment = rightFragment
         super.init(frame: frame)
         self.addSubview(leftFragment)
         self.addSubview(rightFragment)
-        if leftFragment is RestrictionSites {
-            self.bringSubviewToFront(leftFragment)
-        } else if rightFragment is RestrictionSites {
-            self.bringSubviewToFront(rightFragment)
-        }
         
         if leftFragment is RestrictionSites {
-            otherRSRight.frame = CGRectMake(self.frame.width - 20, 0, 20, leftFragment.frame.height)
+            self.bringSubview(toFront: leftFragment)
+        } else if rightFragment is RestrictionSites {
+            self.bringSubview(toFront: rightFragment)
+        }
+        if leftFragment is RestrictionSites {
+            otherRSRight.frame = CGRect(x: self.frame.width - 20, y: 0, width: 20, height: leftFragment.frame.height)
             self.addSubview(otherRSRight)
         } else if rightFragment is RestrictionSites {
-            otherRSLeft.frame = CGRectMake(0, 0, 20, leftFragment.frame.height)
+            otherRSLeft.frame = CGRect(x: 0, y: 0, width: 20, height: leftFragment.frame.height)
             self.addSubview(otherRSLeft)
         }
-        //self.backgroundColor = UIColor(red: 0, green: 0, blue: 255, alpha: 12)
     }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -51,19 +49,16 @@ class DoubleFragmentContainer: UIView {
     var delegate: DNAFragmentDelegate?
     var hasBeenTouched = false
     
-    
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch:UITouch! = touches.first as UITouch!
-        self.center = touch.locationInView(self.superview)
+        self.center = touch.location(in: self.superview)
         hasBeenTouched = true
     }
-    
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch:UITouch! = touches.first as UITouch!
-        self.center = touch.locationInView(self.superview)
+        self.center = touch.location(in: self.superview)
     }
-    
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         delegate?.fragmentDropped(self)
     }
     
@@ -75,14 +70,11 @@ class DNAFragment: UIImageView {
     override var description: String {
         return self.name!
     }
-    
-    //sort out initialisers
     init(name:String, image: UIImage, width:CGFloat, height:CGFloat) {
         super.init(image: image)
         self.name = name
         self.frame.size = CGSize(width: width, height: height)
     }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -103,10 +95,9 @@ class RestrictionSites: SmallFragment {
         self.side = side
         self.originalImage = image
         self.smallWidth = smallWidth
-        self.largeWidth = largeWidth
+        self.largeWidth = largeWidth 
         super.init(name: name, image: image, width: smallWidth, height: height)
     }
-    
     func reloadImage() {
         if isCut {
             self.frame.size.width = largeWidth
@@ -116,43 +107,34 @@ class RestrictionSites: SmallFragment {
             case "right":
                 self.image = UIImage(named: "rightSpaceWithRSs.png")
             default: break
-                
             }
-            //self.backgroundColor = UIColor.grayColor()
         } else {
             self.frame.size.width = smallWidth
             self.image = originalImage
         }
     }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
 }
 
 class Promoter:DNAFragment {
     var activator: String?
     var threshold:Int
     
-    init(name:String, image:UIImage, width:CGFloat, height:CGFloat, activator:String, threshold: Int){
+    init(name:String, image:UIImage, width:CGFloat, height:CGFloat, activator:String, threshold: Int) {
         self.activator = activator
         self.threshold = threshold
         super.init(name: name, image: image, width:width, height:height)
-        
-        
     }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
 class Repressor:DNAFragment {
     var repressor:String?
     var isRepressed:Bool?
-
 }
 
 class Producer: DNAFragment {
@@ -162,21 +144,17 @@ class Producer: DNAFragment {
         super.init(name: name, image: image, width: width, height: height)
         self.substance = substance
     }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func activate(petrieDish:PetrieDish) {
+    func activate(_ petrieDish:PetrieDish) {
         let substance = UIImageView()
         switch self.substance! {
         case "insulin":
-            break
-            //image = insulin
-            //let substance = UIImageView(image: UIImage(named: "))
+            substance.image =  UIImage(named: "insulin")
+            substance.frame.size = CGSize(width: 20, height: 20)
+            petrieDish.insulins.append(substance)
         case "bacteriocin":
-            
-            //image = toxin
             substance.image =  UIImage(named: "bacteriocin")
             substance.frame.size = CGSize(width: 20, height: 20)
             petrieDish.bacteriocins.append(substance)
@@ -190,34 +168,36 @@ class Producer: DNAFragment {
             }
         }
     }
-    
 }
 
-class Reporter:DNAFragment {
+class Reporter:DNAFragment
+{
     var colour: String?
     
-    init(name:String, image:UIImage, width:CGFloat, height:CGFloat, colour:String){
+    init(name:String, image:UIImage, width:CGFloat, height:CGFloat, colour:String) {
         super.init(name:name,image: image, width: width, height: height)
         self.colour = colour
- 
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func activate(petrieDish:PetrieDish) {
+    func activate(_ petrieDish:PetrieDish) {
         for bacteria in petrieDish.goodBacterias {
             if drand48() < 0.2 {
                 switch colour! {
-                    case "Green": bacteria.image = UIImage(named: "GFP Bacteria.png")
-                    case "Red": bacteria.image = UIImage(named: "RFP Bacteria.png")
-                    case "Blue": bacteria.image = UIImage(named: "BFP Bacteria.png")
-                    default: break
+                case "Green": bacteria.image = UIImage(named: "GFP Bacteria.png")
+                case "Red": bacteria.image = UIImage(named: "RFP Bacteria.png")
+                case "Blue": bacteria.image = UIImage(named: "BFP Bacteria.png")
+                default: break
                 }
             }
         }
     }
+}
+
+class RibosomeBindingSite:DNAFragment {
     
 }
 

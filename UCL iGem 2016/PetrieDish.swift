@@ -15,11 +15,13 @@ class PetrieDish: UIImageView {
     var bioBrick:[DNAFragment]?
     var PH:Int?
     var temperature:Int?
+    var sugarConc:Int?
     var lightIsOn:Bool?
     let replicationProb = 0.1
     var bacteriocins:[UIImageView] = []
-    
-    func addBacteria(newBacteria:Bacteria) {
+    var insulins:[UIImageView] = []
+
+    func addBacteria(_ newBacteria:Bacteria) {
         self.addSubview(newBacteria)
         if newBacteria.type == "good" {
             goodBacterias.append(newBacteria)
@@ -27,7 +29,6 @@ class PetrieDish: UIImageView {
             badBacterias.append(newBacteria)
         }
     }
-    
     func move() {
         for bacteria in goodBacterias {
             bacteria.checkDistance()
@@ -38,7 +39,6 @@ class PetrieDish: UIImageView {
             bacteria.move()
         }
     }
-    
     func replicate() {
         if self.goodBacterias.count+self.badBacterias.count <= 100 {
             for bacteria in self.goodBacterias {
@@ -54,23 +54,8 @@ class PetrieDish: UIImageView {
         }
         
     }
-    
     func startMovement() {
-        let moveTimer = NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: Selector("move"), userInfo: nil, repeats: true)
-        let replicationTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("replicate"), userInfo: nil, repeats: true)
+        let moveTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(PetrieDish.move), userInfo: nil, repeats: true)
+        let replicationTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(PetrieDish.replicate), userInfo: nil, repeats: true)
     }
-    
-    //find out which genes are active depending on conditions
-//    func getActiveGenes() {
-//        let currentConditions = [("PH",self.PH), ("Temperature",self.temperature)]
-//        var underActivepromoter = false
-//        for fragment in bioBrick! {
-//            if let promoter = fragment as! Promoter {
-//                underActivepromoter = promoter.checkActive(self,currentConditions)
-//            } else if underActivepromoter {
-//                //express gene
-//            }
-//}
-    
- //   }
 }
